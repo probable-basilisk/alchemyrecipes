@@ -4,7 +4,7 @@
 Noita mod to show alchemy recipes
 
 ## Usage
-Just look at the recipes. The [&lt] button minimizes the recipe
+Just look at the recipes. The `[<]` button minimizes the recipe
 display. Click on the recipe itself to toggle between codenames
 vs. localized names for the ingredients.
 
