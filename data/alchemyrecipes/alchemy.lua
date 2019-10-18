@@ -68,8 +68,13 @@ local function random_recipe(rand_state, seed)
   rand_state, m3 = random_material(rand_state, liqs)
   rand_state, m4 = random_material(rand_state, orgs)
   local combo = {m1, m2, m3, m4}
+
+  rand_state = hax_prng_next(rand_state)
+  local prob = 10 + math.floor((rand_state / 2^31) * 91)
+  rand_state = hax_prng_next(rand_state)
+
   shuffle(combo, seed)
-  return rand_state, {combo[1], combo[2], combo[3]}
+  return rand_state, {combo[1], combo[2], combo[3]}, prob
 end
 
 local function get_alchemy()
@@ -81,12 +86,10 @@ local function get_alchemy()
   end
 
   local lc_combo, ap_combo = {"?"}, {"?"}
-  rand_state, lc_combo = random_recipe(rand_state, seed)
-  rand_state = hax_prng_next(rand_state)
-  rand_state = hax_prng_next(rand_state)
-  rand_state, ap_combo = random_recipe(rand_state, seed)
+  rand_state, lc_combo, lc_prob = random_recipe(rand_state, seed)
+  rand_state, ap_combo, ap_prob = random_recipe(rand_state, seed)
 
-  return lc_combo, ap_combo
+  return lc_combo, ap_combo, lc_prob, ap_prob
 end
 
 local function localize_material(mat)
@@ -94,23 +97,23 @@ local function localize_material(mat)
   if n and n ~= "" then return n else return "[" .. mat .. "]" end
 end
 
-local function format_combo(combo, localize)
+local function format_combo(combo, prob, localize)
   local ret = {}
   for idx, mat in ipairs(combo) do
     ret[idx] = (localize and localize_material(mat)) or mat
   end
-  return table.concat(ret, ", ")
+  return table.concat(ret, ", ") .. " (" .. prob .. "%)"
 end
 
-local lc_combo, ap_combo = get_alchemy()
+local lc_combo, ap_combo, lc_prob, ap_prob = get_alchemy()
 local combos = {
   AP = {
-    [false]=format_combo(ap_combo, false),
-    [true]=format_combo(ap_combo, true)
+    [false]=format_combo(ap_combo, ap_prob, false),
+    [true]=format_combo(ap_combo, ap_prob, true)
   },
   LC = {
-    [false]=format_combo(lc_combo, false),
-    [true]=format_combo(lc_combo, true)
+    [false]=format_combo(lc_combo, lc_prob, false),
+    [true]=format_combo(lc_combo, lc_prob, true)
   }
 }
 
@@ -135,8 +138,8 @@ local function alchemy_gui_func()
     is_open = not is_open
   end
   if is_open then
-    local combo_text = (" AP: %s | LC: %s"):format(
-      combos.AP[localized], combos.LC[localized]
+    local combo_text = (" LC: %s | AP: %s"):format(
+      combos.LC[localized], combos.AP[localized]
     )
     if GuiButton( gui, 0, 0, combo_text, alchemy_button_id+1 ) then
       localized = not localized
