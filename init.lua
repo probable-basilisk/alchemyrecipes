@@ -10,12 +10,14 @@ function OnModPostInit()
 	-- Nothing to do but this function has to exist
 end
 
-function OnPlayerSpawned( player_entity )
+function OnWorldPreUpdate()
 	-- Nothing to do but this function has to exist
 end
 
--- `director_init` is a good target for injecting stuff
--- that needs to stay around all the time
--- (the player entity is a bad choice because it gets
---  destroyed when you polymorph)
-ModLuaFileAppend( "data/scripts/director_init.lua", "data/alchemyrecipes/alchemy.lua" )
+function OnWorldPostUpdate() 
+	-- Nothing to do but this function has to exist
+end
+
+function OnPlayerSpawned( player_entity )
+  EntityLoad("data/alchemyrecipes/alchemygui.xml")
+end
