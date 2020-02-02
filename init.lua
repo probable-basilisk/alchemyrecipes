@@ -1,23 +1,7 @@
-function OnModPreInit()
-	-- Nothing to do but this function has to exist
-end
-
-function OnModInit()
-	-- Nothing to do but this function has to exist
-end
-
-function OnModPostInit()
-	-- Nothing to do but this function has to exist
-end
-
-function OnWorldPreUpdate()
-	-- Nothing to do but this function has to exist
-end
-
 function OnWorldPostUpdate() 
-	-- Nothing to do but this function has to exist
+  if _alchemy_main then _alchemy_main() end
 end
 
 function OnPlayerSpawned( player_entity )
-  EntityLoad("data/alchemyrecipes/alchemygui.xml")
+  dofile("data/alchemyrecipes/alchemy.lua")
 end

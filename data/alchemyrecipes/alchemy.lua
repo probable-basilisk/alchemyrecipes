@@ -1,9 +1,3 @@
-if not async then
-  -- guard against multiple inclusion to prevent
-  -- loss of async coroutines
-  dofile( "data/scripts/lib/coroutines.lua" )
-end
-
 local function hax_prng_next(v)
   local hi = math.floor(v / 127773.0)
   local lo = v % 127773
@@ -130,7 +124,7 @@ local gui = _alchemy_gui
 local alchemy_button_id = 323
 
 local is_open = true
-local localized = false
+local localized = true
 
 local function alchemy_gui_func()
   GuiLayoutBeginHorizontal( gui, 1, 0 )
@@ -150,17 +144,13 @@ end
 
 _alchemy_gui_func = alchemy_gui_func
 
-if created_gui then
-  print("Starting alchemy GUI loop")
-  async_loop(function()
-    wait(0)
-    if not (gui and _alchemy_gui_func) then return end
-
-    GuiStartFrame( gui )
-    local happy, errstr = pcall(_alchemy_gui_func)
-    if not happy then
-      print("Gui error: " .. errstr)
-      _alchemy_gui_func = nil
-    end
-  end)
+function _alchemy_main()
+  if not created_gui then return end
+  if not (gui and _alchemy_gui_func) then return end
+  GuiStartFrame( gui )
+  local happy, errstr = pcall(_alchemy_gui_func)
+  if not happy then
+    print("Gui error: " .. errstr)
+    _alchemy_gui_func = nil
+  end
 end
